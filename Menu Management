@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Menu Management Module</title>
+</head>
+<body>
+
+  <h1>Menu Management Module</h1>
+  <p>Total Items: <span id="itemCount">0</span></p>
+
+  <!-- SEARCH BAR -->
+  <input type="text" id="searchInput" placeholder="Search by name or category..." size="40">
+  <br><br>
+
+  <!-- CATEGORY TABS -->
+  <div id="categoryTabs"></div>
+  <br>
+
+  <button onclick="showAddForm()">+ Add Item</button>
+  <br><br>
+
+  <!-- ADD / EDIT FORM -->
+  <div id="formSection" style="display:none;">
+    <h3 id="formTitle">Add Menu Item</h3>
+    <input type="hidden" id="editId">
+
+    Name:<br>
+    <input type="text" id="name" size="40"><br><br>
+
+    Category:<br>
+    <input type="text" id="category" size="40"><br><br>
+
+    Price:<br>
+    <input type="number" id="price" value="0"><br><br>
+
+    Cost:<br>
+    <input type="number" id="cost" value="0"><br><br>
+
+    Stock:<br>
+    <input type="number" id="stock" value="0"><br><br>
+
+    <button onclick="saveItem()">Save</button>
+    <button onclick="hideForm()">Cancel</button>
+    <br><br>
+  </div>
+
+  <!-- TABLE -->
+  <table border="1" cellpadding="8" cellspacing="0">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Price</th>
+        <th>Cost</th>
+        <th>Stock</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody"></tbody>
+  </table>
+
+  <script>
+    // ========== COMPLETE MENU DATA ==========
+    let menuItems = [
+      // Matcha Series
+      { id: 1,  name: "Seasalt Matchaberry", price: 218, cost: 70, stock: 50, category: "Matcha Series" },
+      { id: 2,  name: "Dirty Matcha",        price: 178, cost: 55, stock: 50, category: "Matcha Series" },
+      { id: 3,  name: "Seasalt Matcha",      price: 168, cost: 50, stock: 50, category: "Matcha Series" },
+      { id: 4,  name: "Matcha Oreo",         price: 158, cost: 48, stock: 50, category: "Matcha Series" },
+      { id: 5,  name: "Matchaberry",         price: 158, cost: 48, stock: 50, category: "Matcha Series" },
+      { id: 6,  name: "Matcha",              price: 128, cost: 40, stock: 50, category: "Matcha Series" },
+
+      // Add on's
+      { id: 7,  name: "Breve Milk",          price: 48,  cost: 15, stock: 100, category: "Add on's" },
+      { id: 8,  name: "Espresso Shot",       price: 38,  cost: 12, stock: 100, category: "Add on's" },
+      { id: 9,  name: "Sauce",               price: 38,  cost: 10, stock: 100, category: "Add on's" },
+      { id: 10, name: "Whipped Cream",       price: 18,  cost: 5,  stock: 100, category: "Add on's" },
+
+      // Alternative Milk
+      { id: 11, name: "Oat",                 price: 49,  cost: 18, stock: 80, category: "Alternative Milk" },
+      { id: 12, name: "Almond",              price: 48,  cost: 18, stock: 80, category: "Alternative Milk" },
+      { id: 13, name: "Soy",                 price: 38,  cost: 12, stock: 80, category: "Alternative Milk" },
+
+      // Classics
+      { id: 14, name: "Caramel Macchiato",   price: 158, cost: 45, stock: 99, category: "Classics" },
+      { id: 15, name: "White Mocha",         price: 178, cost: 48, stock: 100, category: "Classics" },
+      { id: 16, name: "Dark Mocha",          price: 178, cost: 48, stock: 100, category: "Classics" },
+      { id: 17, name: "French Vanilla",      price: 158, cost: 42, stock: 100, category: "Classics" },
+      { id: 18, name: "Spanish Latte",       price: 128, cost: 38, stock: 100, category: "Classics" },
+      { id: 19, name: "Cafe Latte",          price: 118, cost: 35, stock: 100, category: "Classics" },
+      { id: 20, name: "Cappuccino",          price: 118, cost: 35, stock: 100, category: "Classics" },
+      { id: 21, name: "Americano",           price: 98,  cost: 30, stock: 99, category: "Classics" },
+
+      // Premium
+      { id: 22, name: "Biscoff",             price: 178, cost: 55, stock: 80, category: "Premium" },
+      { id: 23, name: "Pistachio Latte",     price: 178, cost: 55, stock: 80, category: "Premium" },
+      { id: 24, name: "Dark Hazelnut",       price: 168, cost: 52, stock: 80, category: "Premium" },
+      { id: 25, name: "Salted Caramel",      price: 178, cost: 50, stock: 80, category: "Premium" },
+      { id: 26, name: "Seasalt Latte",       price: 158, cost: 48, stock: 80, category: "Premium" },
+      { id: 27, name: "Macadamia",           price: 158, cost: 50, stock: 80, category: "Premium" },
+
+      // Non Coffee
+      { id: 28, name: "Chocoberry",          price: 158, cost: 45, stock: 90, category: "Non Coffee" },
+      { id: 29, name: "Strawberry",          price: 148, cost: 42, stock: 90, category: "Non Coffee" },
+      { id: 30, name: "Blueberry",           price: 148, cost: 42, stock: 90, category: "Non Coffee" },
+      { id: 31, name: "Chocolate",           price: 128, cost: 40, stock: 90, category: "Non Coffee" },
+      { id: 32, name: "Milky Ube",           price: 128, cost: 40, stock: 90, category: "Non Coffee" },
+
+      // Frappé Coffee Based
+      { id: 33, name: "Biscoff",             price: 188, cost: 60, stock: 70, category: "Frappé Coffee Based" },
+      { id: 34, name: "Pistachio",           price: 188, cost: 60, stock: 70, category: "Frappé Coffee Based" },
+      { id: 35, name: "White Mocha",         price: 188, cost: 58, stock: 70, category: "Frappé Coffee Based" },
+      { id: 36, name: "Dark Mocha",          price: 188, cost: 58, stock: 70, category: "Frappé Coffee Based" },
+      { id: 37, name: "Caramel Macchiato",   price: 168, cost: 52, stock: 70, category: "Frappé Coffee Based" },
+      { id: 38, name: "Dark Hazelnut",       price: 168, cost: 52, stock: 70, category: "Frappé Coffee Based" },
+      { id: 39, name: "Macadamia",           price: 158, cost: 50, stock: 70, category: "Frappé Coffee Based" },
+
+      // Non Coffee Based
+      { id: 40, name: "Matcha Oreo",         price: 198, cost: 65, stock: 60, category: "Non Coffee Based" },
+      { id: 41, name: "Strawberry Oreo",     price: 198, cost: 65, stock: 60, category: "Non Coffee Based" },
+      { id: 42, name: "Matcha",              price: 178, cost: 55, stock: 60, category: "Non Coffee Based" },
+      { id: 43, name: "Pistachio",           price: 178, cost: 55, stock: 60, category: "Non Coffee Based" },
+      { id: 44, name: "Strawberry",          price: 168, cost: 50, stock: 60, category: "Non Coffee Based" },
+      { id: 45, name: "Nutella",             price: 178, cost: 55, stock: 60, category: "Non Coffee Based" },
+      { id: 46, name: "Oreo",                price: 158, cost: 48, stock: 60, category: "Non Coffee Based" },
+      { id: 47, name: "Ube",                 price: 148, cost: 45, stock: 60, category: "Non Coffee Based" },
+      { id: 48, name: "Choco",               price: 148, cost: 45, stock: 60, category: "Non Coffee Based" },
+
+      // Soda / Smoothie
+      { id: 49, name: "Strawberry",          price: 118, cost: 35, stock: 80, category: "Soda / Smoothie" },
+      { id: 50, name: "Blueberry",           price: 118, cost: 35, stock: 80, category: "Soda / Smoothie" },
+      { id: 51, name: "Passion Fruit",       price: 118, cost: 35, stock: 80, category: "Soda / Smoothie" },
+      { id: 52, name: "Peach Mango",         price: 118, cost: 35, stock: 80, category: "Soda / Smoothie" },
+      { id: 53, name: "Mixed Berries",       price: 118, cost: 35, stock: 80, category: "Soda / Smoothie" },
+
+      // Black Rituals
+      { id: 54, name: "Black Balance",       price: 188, cost: 60, stock: 40, category: "Black Rituals" },
+      { id: 55, name: "Obsidian Spanish",    price: 188, cost: 60, stock: 40, category: "Black Rituals" },
+      { id: 56, name: "Molten Caramel",      price: 198, cost: 65, stock: 40, category: "Black Rituals" },
+      { id: 57, name: "Salted Void",         price: 198, cost: 65, stock: 40, category: "Black Rituals" },
+
+      // Mind Rituals
+      { id: 58, name: "Lion's Focus",        price: 178, cost: 55, stock: 40, category: "Mind Rituals" },
+      { id: 59, name: "Dark Cognition",      price: 198, cost: 65, stock: 40, category: "Mind Rituals" },
+      { id: 60, name: "Golden Clarity",      price: 208, cost: 70, stock: 40, category: "Mind Rituals" },
+      { id: 61, name: "Still Mind",          price: 168, cost: 50, stock: 40, category: "Mind Rituals" },
+
+      // Green Rituals
+      { id: 62, name: "Double Matcha",       price: 238, cost: 80, stock: 30, category: "Green Rituals" },
+      { id: 63, name: "Cold Whisked Matcha", price: 228, cost: 75, stock: 30, category: "Green Rituals" },
+      { id: 64, name: "Coconut Vanilla Cloud", price: 228, cost: 75, stock: 30, category: "Green Rituals" },
+      { id: 65, name: "Classic Matcha",      price: 198, cost: 65, stock: 30, category: "Green Rituals" },
+
+      // Red Rituals
+      { id: 66, name: "Green Goodies",       price: 158, cost: 45, stock: 50, category: "Red Rituals" },
+      { id: 67, name: "Red Goodies",         price: 158, cost: 45, stock: 50, category: "Red Rituals" },
+      { id: 68, name: "Purple Goodies",      price: 158, cost: 45, stock: 50, category: "Red Rituals" },
+      { id: 69, name: "Orange Goodies",      price: 158, cost: 45, stock: 50, category: "Red Rituals" },
+
+      // Rice Meals
+      { id: 70, name: "Beef Tapa",           price: 158, cost: 55, stock: 40, category: "Rice Meals" },
+      { id: 71, name: "Chicken Teriyaki",    price: 148, cost: 50, stock: 40, category: "Rice Meals" },
+      { id: 72, name: "Garlic Chicken",      price: 148, cost: 50, stock: 40, category: "Rice Meals" },
+      { id: 73, name: "Spam Musubi",         price: 148, cost: 50, stock: 40, category: "Rice Meals" },
+      { id: 74, name: "Hungarian",           price: 178, cost: 60, stock: 40, category: "Rice Meals" },
+      { id: 75, name: "Bacon & Egg",         price: 158, cost: 55, stock: 40, category: "Rice Meals" },
+      { id: 76, name: "Special Pastil",      price: 168, cost: 55, stock: 40, category: "Rice Meals" },
+      { id: 77, name: "Spicy Special Pastil",price: 188, cost: 65, stock: 40, category: "Rice Meals" },
+
+      // Pasta
+      { id: 78, name: "Chicken Alfredo",     price: 168, cost: 55, stock: 35, category: "Pasta" },
+      { id: 79, name: "Tuna Alfredo",        price: 178, cost: 60, stock: 35, category: "Pasta" },
+      { id: 80, name: "Carbonara",           price: 168, cost: 55, stock: 35, category: "Pasta" },
+      { id: 81, name: "Lasagna",             price: 178, cost: 60, stock: 35, category: "Pasta" },
+
+      // Veggie Salad
+      { id: 82, name: "Caesar Salad",        price: 208, cost: 70, stock: 25, category: "Veggie Salad" },
+
+      // Finger Foods
+      { id: 83, name: "Chicken Pops with Fries", price: 148, cost: 50, stock: 45, category: "Finger Foods" },
+      { id: 84, name: "Special Fries",       price: 138, cost: 40, stock: 45, category: "Finger Foods" },
+      { id: 85, name: "Crisscut",            price: 148, cost: 45, stock: 45, category: "Finger Foods" },
+      { id: 86, name: "Potato Wedges",       price: 148, cost: 45, stock: 45, category: "Finger Foods" },
+      { id: 87, name: "Cheesy Nachos",       price: 178, cost: 55, stock: 45, category: "Finger Foods" },
+      { id: 88, name: "Clubhouse",           price: 148, cost: 50, stock: 45, category: "Finger Foods" },
+      { id: 89, name: "Flavored Fries",      price: 108, cost: 30, stock: 45, category: "Finger Foods" },
+
+      // Barkada Bundles
+      { id: 90, name: "Barkada Bundle 1",    price: 298, cost: 120, stock: 20, category: "Barkada Bundles" },
+      { id: 91, name: "Barkada Bundle 2",    price: 298, cost: 120, stock: 20, category: "Barkada Bundles" }
+    ];
+
+    let nextId = 92;
+    let currentCategory = "All";
+
+    // ========== MANUAL LINEAR SEARCH BY ID ==========
+    function linearSearchById(id) {
+      for (let i = 0; i < menuItems.length; i++) {
+        if (menuItems[i].id === id) {
+          return i;
+        }
+      }
+      return -1;
+    }
+
+    // ========== MANUAL SEARCH ==========
+    function searchItems(keyword) {
+      const result = [];
+      const key = keyword.toLowerCase();
+
+      for (let i = 0; i < menuItems.length; i++) {
+        const name = menuItems[i].name.toLowerCase();
+        const category = menuItems[i].category.toLowerCase();
+
+        if (name.indexOf(key) !== -1 || category.indexOf(key) !== -1) {
+          result.push(menuItems[i]);
+        }
+      }
+      return result;
+    }
+
+    // ========== MANUAL FILTER BY CATEGORY ==========
+    function filterByCategory(category) {
+      const result = [];
+      for (let i = 0; i < menuItems.length; i++) {
+        if (menuItems[i].category === category) {
+          result.push(menuItems[i]);
+        }
+      }
+      return result;
+    }
+
+    // ========== GET ALL UNIQUE CATEGORIES ==========
+    function getCategories() {
+      const cats = ["All"];
+      for (let i = 0; i < menuItems.length; i++) {
+        let exists = false;
+        for (let j = 0; j < cats.length; j++) {
+          if (cats[j] === menuItems[i].category) {
+            exists = true;
+            break;
+          }
+        }
+        if (!exists) {
+          cats.push(menuItems[i].category);
+        }
+      }
+      return cats;
+    }
+
+    // ========== RENDER CATEGORY TABS ==========
+    function renderCategoryTabs() {
+      const container = document.getElementById("categoryTabs");
+      container.innerHTML = "";
+
+      const categories = getCategories();
+      for (let i = 0; i < categories.length; i++) {
+        const cat = categories[i];
+        const btn = document.createElement("button");
+        btn.textContent = (cat === currentCategory ? "→ " : "") + cat;
+        btn.style.marginRight = "6px";
+        btn.style.marginBottom = "6px";
+
+        btn.onclick = function () {
+          currentCategory = cat;
+          document.getElementById("searchInput").value = "";
+          renderCategoryTabs();
+          renderTable();
+        };
+        container.appendChild(btn);
+      }
+    }
+
+    // ========== RENDER TABLE ==========
+    function renderTable() {
+      const tbody = document.getElementById("tableBody");
+      tbody.innerHTML = "";
+
+      const keyword = document.getElementById("searchInput").value.trim();
+      let displayItems = [];
+
+      if (keyword !== "") {
+        displayItems = searchItems(keyword);
+      } else if (currentCategory === "All") {
+        displayItems = menuItems;
+      } else {
+        displayItems = filterByCategory(currentCategory);
+      }
+
+      for (let i = 0; i < displayItems.length; i++) {
+        const item = displayItems[i];
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${item.id}</td>
+          <td>${item.name}</td>
+          <td>${item.category}</td>
+          <td>₱${item.price}</td>
+          <td>₱${item.cost}</td>
+          <td>${item.stock}</td>
+          <td>
+            <button onclick="editItem(${item.id})">Edit</button>
+            <button onclick="deleteItem(${item.id})">Del</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      document.getElementById("itemCount").textContent = displayItems.length;
+    }
+
+    // ========== FORM FUNCTIONS ==========
+    function showAddForm() {
+      document.getElementById("formTitle").textContent = "Add Menu Item";
+      document.getElementById("editId").value = "";
+      document.getElementById("name").value = "";
+      document.getElementById("category").value = "";
+      document.getElementById("price").value = 0;
+      document.getElementById("cost").value = 0;
+      document.getElementById("stock").value = 0;
+      document.getElementById("formSection").style.display = "block";
+    }
+
+    function hideForm() {
+      document.getElementById("formSection").style.display = "none";
+    }
+
+    function saveItem() {
+      const id = document.getElementById("editId").value;
+      const name = document.getElementById("name").value.trim();
+      const category = document.getElementById("category").value.trim();
+      const price = Number(document.getElementById("price").value);
+      const cost = Number(document.getElementById("cost").value);
+      const stock = Number(document.getElementById("stock").value);
+
+      if (name === "" || category === "") {
+        alert("Name and Category are required!");
+        return;
+      }
+
+      if (id === "") {
+        // ADD
+        const newItem = {
+          id: nextId,
+          name: name,
+          category: category,
+          price: price,
+          cost: cost,
+          stock: stock
+        };
+        menuItems.push(newItem);
+        nextId++;
+      } else {
+        // EDIT
+        const index = linearSearchById(Number(id));
+        if (index !== -1) {
+          menuItems[index].name = name;
+          menuItems[index].category = category;
+          menuItems[index].price = price;
+          menuItems[index].cost = cost;
+          menuItems[index].stock = stock;
+        }
+      }
+
+      hideForm();
+      renderCategoryTabs();
+      renderTable();
+    }
+
+    function editItem(id) {
+      const index = linearSearchById(id);
+      if (index === -1) return;
+
+      const item = menuItems[index];
+      document.getElementById("formTitle").textContent = "Edit Menu Item";
+      document.getElementById("editId").value = item.id;
+      document.getElementById("name").value = item.name;
+      document.getElementById("category").value = item.category;
+      document.getElementById("price").value = item.price;
+      document.getElementById("cost").value = item.cost;
+      document.getElementById("stock").value = item.stock;
+      document.getElementById("formSection").style.display = "block";
+    }
+
+    // ========== MANUAL DELETE ==========
+    function deleteItem(id) {
+      if (!confirm("Are you sure you want to delete this item?")) return;
+
+      const index = linearSearchById(id);
+      if (index === -1) return;
+
+      // Manual shift
+      for (let i = index; i < menuItems.length - 1; i++) {
+        menuItems[i] = menuItems[i + 1];
+      }
+      menuItems.pop();
+
+      renderCategoryTabs();
+      renderTable();
+    }
+
+    // ========== EVENT ==========
+    document.getElementById("searchInput").addEventListener("input", renderTable);
+
+    // ========== INIT ==========
+    renderCategoryTabs();
+    renderTable();
+  </script>
+</body>
+</html>
