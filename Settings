@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Settings Module</title>
+</head>
+<body>
+
+  <h1>Settings Module</h1>
+<hr>
+  <h2>Store Settings</h2>
+
+  Store Name:<br>
+  <input type="text" id="storeName" size="40"><br><br>
+
+  Address:<br>
+  <input type="text" id="address" size="40"><br><br>
+
+  Phone Number:<br>
+  <input type="text" id="phone" size="40"><br><br>
+
+  Tax Rate (%):<br>
+  <input type="number" id="taxRate" step="0.01"><br><br>
+
+  Service Charge (%):<br>
+  <input type="number" id="serviceCharge" step="0.01"><br><br>
+
+  Currency Symbol:<br>
+  <input type="text" id="currency" size="5"><br><br>
+
+  Receipt Footer:<br>
+  <input type="text" id="receiptFooter" size="50"><br><br>
+
+  <button onclick="saveSettings()">Save Settings</button>
+  <button onclick="resetAllData()">Reset All Data</button>
+
+  <p id="message"></p>
+
+  <script>
+    // Default settings
+    const defaultSettings = {
+      storeName: "Café Templado",
+      address: "123 Ritual Street, Manila",
+      phone: "+63 912 345 6789",
+      taxRate: 12,
+      serviceCharge: 0,
+      currency: "₱",
+      receiptFooter: "Thank you for elevating with us."
+    };
+
+    // Current settings
+    let settings = {
+      storeName: "Café Templado",
+      address: "123 Ritual Street, Manila",
+      phone: "+63 912 345 6789",
+      taxRate: 12,
+      serviceCharge: 0,
+      currency: "₱",
+      receiptFooter: "Thank you for elevating with us."
+    };
+
+    // Load settings into the form
+    function loadSettings() {
+      document.getElementById("storeName").value = settings.storeName;
+      document.getElementById("address").value = settings.address;
+      document.getElementById("phone").value = settings.phone;
+      document.getElementById("taxRate").value = settings.taxRate;
+      document.getElementById("serviceCharge").value = settings.serviceCharge;
+      document.getElementById("currency").value = settings.currency;
+      document.getElementById("receiptFooter").value = settings.receiptFooter;
+    }
+
+    // Save settings
+    function saveSettings() {
+      settings.storeName = document.getElementById("storeName").value.trim();
+      settings.address = document.getElementById("address").value.trim();
+      settings.phone = document.getElementById("phone").value.trim();
+      settings.taxRate = Number(document.getElementById("taxRate").value);
+      settings.serviceCharge = Number(document.getElementById("serviceCharge").value);
+      settings.currency = document.getElementById("currency").value.trim();
+      settings.receiptFooter = document.getElementById("receiptFooter").value.trim();
+
+      if (settings.storeName === "" || settings.address === "" || settings.phone === "") {
+        document.getElementById("message").textContent = "Please fill in Store Name, Address, and Phone Number.";
+        return;
+      }
+
+      document.getElementById("message").textContent = "Settings saved successfully!";
+    }
+
+    // Reset to default
+    function resetAllData() {
+      if (!confirm("Are you sure you want to reset all settings to default?")) return;
+
+      settings.storeName = defaultSettings.storeName;
+      settings.address = defaultSettings.address;
+      settings.phone = defaultSettings.phone;
+      settings.taxRate = defaultSettings.taxRate;
+      settings.serviceCharge = defaultSettings.serviceCharge;
+      settings.currency = defaultSettings.currency;
+      settings.receiptFooter = defaultSettings.receiptFooter;
+
+      loadSettings();
+      document.getElementById("message").textContent = "All settings have been reset to default.";
+    }
+
+    // Initialize
+    loadSettings();
+  </script>
+</body>
+</html>
