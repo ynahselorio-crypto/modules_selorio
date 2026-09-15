@@ -5,7 +5,6 @@
   <title>Promotions and Loyalty Module</title>
 </head>
 <body>
-
   <h1>Promotions & Loyalty Module</h1>
 <hr>
   <!-- ACTIVE PROMOTIONS TABLE -->
@@ -23,31 +22,24 @@
     </thead>
     <tbody id="promoTableBody"></tbody>
   </table>
-
   <br>
-
   <button onclick="showAddForm()">+ Add Promo</button>
   <br><br>
 
-  <!-- ADD PROMOTION FORM (now below the table) -->
+  <!-- ADD PROMOTION FORM -->
   <div id="formSection" style="display:none;">
     <h3>Add Promotion</h3>
-
     Name:<br>
     <input type="text" id="promoName" size="30"><br><br>
-
     Code:<br>
     <input type="text" id="promoCode" size="20"><br><br>
-
     Type:<br>
     <select id="promoType">
       <option value="percent">Percent Off</option>
       <option value="free">Free Item</option>
     </select><br><br>
-
     Value:<br>
     <input type="number" id="promoValue" value="10"><br><br>
-
     <button onclick="addPromotion()">Save</button>
     <button onclick="hideForm()">Cancel</button>
     <br><br>
@@ -56,7 +48,6 @@
   <!-- LOYALTY OVERVIEW -->
   <h2>Loyalty Overview</h2>
   <p>Customers earn <strong>1 point per ₱50</strong> spent. Points can be redeemed for free drinks.</p>
-
   <table border="1" cellpadding="8" cellspacing="0">
     <thead>
       <tr>
@@ -69,15 +60,9 @@
   </table>
 
   <script>
-    let promotions = [
-      { name: "Happy Hour 20%", code: "HAPPY20", type: "percent", value: 20, status: "Active" },
-      { name: "Loyalty Free Drink", code: "LOYALFREE", type: "free", value: 1, status: "Active" }
-    ];
-
-    let customers = [
-      { name: "Anna Reyes", points: 120, visits: 8 },
-      { name: "Carlo Mendoza", points: 45, visits: 3 }
-    ];
+    // Empty arrays (no given/sample data)
+    let promotions = [];
+    let customers = [];
 
     function linearSearchPromo(code) {
       for (let i = 0; i < promotions.length; i++) {
@@ -91,11 +76,9 @@
     function renderPromotions() {
       const tbody = document.getElementById("promoTableBody");
       tbody.innerHTML = "";
-
       for (let i = 0; i < promotions.length; i++) {
         const p = promotions[i];
         const tr = document.createElement("tr");
-
         tr.innerHTML = `
           <td>${p.name}</td>
           <td>${p.code}</td>
@@ -114,7 +97,6 @@
     function renderLoyalty() {
       const tbody = document.getElementById("loyaltyTableBody");
       tbody.innerHTML = "";
-
       for (let i = 0; i < customers.length; i++) {
         const c = customers[i];
         const tr = document.createElement("tr");
@@ -149,7 +131,6 @@
         alert("Name and Code are required!");
         return;
       }
-
       if (linearSearchPromo(code) !== -1) {
         alert("Promotion code already exists!");
         return;
@@ -189,10 +170,10 @@
         promotions[i] = promotions[i + 1];
       }
       promotions.pop();
-
       renderPromotions();
     }
 
+    // Initialize empty tables
     renderPromotions();
     renderLoyalty();
   </script>
