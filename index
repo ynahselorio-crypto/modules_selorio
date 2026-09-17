@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Café Templado – Management System</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #111;
+      color: #eee;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ===== SIDEBAR ===== */
+    .sidebar {
+      width: 220px;
+      background: #1a1a1a;
+      border-right: 1px solid #333;
+      padding: 20px 0;
+    }
+
+    .brand {
+      padding: 0 20px 20px;
+      border-bottom: 1px solid #333;
+      margin-bottom: 15px;
+    }
+
+    .brand h1 {
+      font-size: 1.3rem;
+      color: #d4a017;
+    }
+
+    .brand p {
+      font-size: 0.8rem;
+      color: #888;
+      margin-top: 4px;
+    }
+
+    .nav-item {
+      padding: 12px 20px;
+      color: #bbb;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .nav-item:hover {
+      background: #252525;
+      color: #fff;
+    }
+
+    .nav-item.active {
+      background: #2a2a2a;
+      color: #d4a017;
+      font-weight: bold;
+    }
+
+    /* ===== MAIN ===== */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content {
+      padding: 25px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    /* ===== COMMON ===== */
+    .page-title-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      padding: 8px 14px;
+      border: none;
+      border-radius: 0;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .btn-primary {
+      background: #d4a017;
+      color: #111;
+    }
+
+    .btn-primary:hover {
+      background: #e0b020;
+    }
+
+    .btn-secondary {
+      background: #333;
+      color: #eee;
+    }
+
+    .btn-secondary:hover {
+      background: #444;
+    }
+
+    .btn-danger {
+      background: #dc2626;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: #ef4444;
+    }
+
+    .btn-sm {
+      padding: 4px 10px;
+      font-size: 0.8rem;
+    }
+
+    .card {
+      background: #1c1c1c;
+      border: 1px solid #333;
+      border-radius: 0;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 10px;
+      color: #888;
+      border-bottom: 1px solid #333;
+      font-size: 0.8rem;
+    }
+
+    td {
+      padding: 10px;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    tr:hover {
+      background: #222;
+    }
+
+    .status-active {
+      background: #166534;
+      color: #4ade80;
+      padding: 2px 8px;
+      border-radius: 0;
+      font-size: 0.75rem;
+    }
+
+    .status-inactive {
+      background: #444;
+      color: #aaa;
+      padding: 2px 8px;
+      border-radius: 0;
+      font-size: 0.75rem;
+    }
+
+    .actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    /* Forms */
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      color: #999;
+      margin-bottom: 4px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 8px 12px;
+      background: #141414;
+      border: 1px solid #333;
+      border-radius: 0;
+      color: #eee;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #d4a017;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .form-section {
+      background: #1c1c1c;
+      border: 1px solid #333;
+      border-radius: 0;
+      padding: 20px;
+      margin-bottom: 20px;
+      max-width: 450px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* Search & Tabs */
+    .search-bar {
+      width: 280px;
+      padding: 8px 12px;
+      background: #141414;
+      border: 1px solid #333;
+      border-radius: 0;
+      color: #eee;
+      margin-bottom: 15px;
+    }
+
+    .category-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 15px;
+    }
+
+    .cat-btn {
+      background: #2a2a2a;
+      border: 1px solid #3a3a3a;
+      color: #bbb;
+      padding: 5px 12px;
+      border-radius: 0;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .cat-btn:hover {
+      background: #333;
+      color: #fff;
+    }
+
+    .cat-btn.active {
+      background: #d4a017;
+      color: #111;
+      border-color: #d4a017;
+    }
+
+    /* Message */
+    .message {
+      margin-top: 12px;
+      font-size: 0.9rem;
+    }
+
+    .message.success {
+      color: #4ade80;
+    }
+
+    .message.error {
+      color: #f87171;
+    }
+
+    /* Module */
+    .module {
+      display: none;
+    }
+
+    .module.active {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="brand">
+      <h1>Café Templado</h1>
+      <p>System Admin (admin)</p>
+    </div>
+    <nav class="nav">
+      <div class="nav-item" data-module="menu">Menu Management</div>
+      <div class="nav-item" data-module="promo">Promotions & Loyalty</div>
+      <div class="nav-item" data-module="settings">Settings</div>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="content">
+      <!-- ==================== MENU MANAGEMENT ==================== -->
+      <div id="module-menu" class="module active">
+        <div class="page-title-row">
+          <h3>Menu Items (<span id="itemCount">0</span>)</h3>
+          <button class="btn btn-primary" onclick="showAddForm()">+ Add Item</button>
+        </div>
+
+        <input type="text" id="searchInput" class="search-bar" placeholder="Search by name or category...">
+        <div id="categoryTabs" class="category-tabs"></div>
+
+        <!-- Add / Edit Form -->
+        <div id="formSection" class="form-section hidden">
+          <h3 id="formTitle">Add Menu Item</h3>
+          <input type="hidden" id="editId">
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" id="name">
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <input type="text" id="category">
+          </div>
+          <div class="form-group">
+            <label>Price</label>
+            <input type="number" id="price" value="0">
+          </div>
+          <div class="form-group">
+            <label>Stock</label>
+            <input type="number" id="stock" value="0">
+          </div>
+          <div class="form-row">
+            <button class="btn btn-primary" onclick="saveItem()">Save</button>
+            <button class="btn btn-secondary" onclick="hideForm()">Cancel</button>
+          </div>
+        </div>
+
+        <div class="card" style="padding: 0; overflow: hidden;">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Price</th>
+                <th>Stock</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ==================== PROMOTIONS & LOYALTY ==================== -->
+      <div id="module-promo" class="module">
+        <div class="page-title-row">
+          <h3>Promotions & Loyalty</h3>
+          <button class="btn btn-primary" onclick="showAddFormPromo()">+ Add Promo</button>
+        </div>
+
+        <div id="formSectionPromo" class="form-section hidden">
+          <h3>Add Promotion</h3>
+          <div class="form-group">
+            <label>Code</label>
+            <input type="text" id="promoCode">
+          </div>
+          <div class="form-group">
+            <label>Type</label>
+            <select id="promoType">
+              <option value="percent">Percent Off</option>
+              <option value="free">Free Item</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Value</label>
+            <input type="number" id="promoValue" value="10">
+          </div>
+          <div class="form-row">
+            <button class="btn btn-primary" onclick="addPromotion()">Save</button>
+            <button class="btn btn-secondary" onclick="hideFormPromo()">Cancel</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>Active Promotions</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Type</th>
+                <th>Value</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="promoTableBody"></tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <h3>Loyalty Overview</h3>
+          <p style="color:#999; font-size:0.9rem; margin-bottom:16px;">
+            Customers earn <strong style="color:#e5e5e5;">1 point per ₱50</strong> spent. Points can be redeemed for free drinks.
+          </p>
+          <table>
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Points</th>
+              </tr>
+            </thead>
+            <tbody id="loyaltyTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ==================== SETTINGS ==================== -->
+      <div id="module-settings" class="module">
+        <div class="card" style="max-width: 480px;">
+          <h3>Store Settings</h3>
+          <div class="form-group">
+            <label>Store Name</label>
+            <input type="text" id="storeName">
+          </div>
+          <div class="form-group">
+            <label>Address</label>
+            <input type="text" id="address">
+          </div>
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="text" id="phone">
+          </div>
+          <div class="form-group">
+            <label>Tax Rate (%)</label>
+            <input type="number" id="taxRate" step="0.01">
+          </div>
+          <div class="form-group">
+            <label>Service Charge (%)</label>
+            <input type="number" id="serviceCharge" step="0.01">
+          </div>
+          <div class="form-group">
+            <label>Currency Symbol</label>
+            <input type="text" id="currency" size="5">
+          </div>
+          <div class="form-group">
+            <label>Receipt Footer</label>
+            <input type="text" id="receiptFooter">
+          </div>
+          <div class="form-row" style="margin-bottom: 24px;">
+            <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+          </div>
+
+          <hr style="border:none; border-top:1px solid #333; margin: 20px 0;">
+
+          <h3 style="margin-bottom:14px;">Data</h3>
+          <div class="form-row">
+            <button class="btn btn-danger" onclick="resetAllData()">Reset All Data</button>
+          </div>
+          <p id="message" class="message"></p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
